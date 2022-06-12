@@ -8,11 +8,9 @@ import javax.persistence.*;
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "name")
     private String name;
 
     public Role() {

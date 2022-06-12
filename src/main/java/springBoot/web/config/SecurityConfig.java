@@ -21,9 +21,12 @@ import springBoot.web.config.handler.LoginSuccessHandler;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    @Autowired
-    @Qualifier(value = "userServiceImp")
     private UserDetailsService userDetailsService;
+
+    public SecurityConfig(@Qualifier(value = "userServiceImp")
+                              UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
