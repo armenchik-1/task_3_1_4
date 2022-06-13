@@ -7,19 +7,17 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    public List<User> getAllUsers();
+    List<User> getAllUsers();
 
-    public boolean addUser(User user, String role);
+    boolean addUser(User user, String role);
 
-    public void removeUser(long id);
+    void removeUser(long id);
 
-    public boolean updateUser(User user, String role);
+    boolean updateUser(User user, String role);
 
-    public User getUserById(long id);
+    User getUserById(long id);
 
-    public void addAdminAndUserPanel();
+    void addAdminAndUserPanel();
 
-    public String ifPasswordNull(Long id, String password);
-
-    public Set<Role> getRoleForUser(String role);
+    Set<Role> getRoleForUser(String role);
 }

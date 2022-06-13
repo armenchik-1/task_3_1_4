@@ -7,19 +7,19 @@ import java.util.List;
 
 public interface UserDao {
 
-    public List<User> getAllUsers();
+    List<User> getAllUsers();
 
-    public void addUser(User user);
+    void addUser(User user);
 
-    public void removeUser(long id);
+    void removeUser(long id);
 
-    public void updateUser(User user);
+    void updateUser(User user);
 
-    public boolean isNotReg(String name);
+    boolean isExists(String name);
 
-    public User getUserById(long id);
+    User getUserById(long id);
 
-    public User getUserByName(String name);
+    User getUserByName(String name);
 
 }
 

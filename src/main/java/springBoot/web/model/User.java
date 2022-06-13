@@ -27,7 +27,7 @@ public class User implements UserDetails {
 
     }
 
-    public User( String firstName, String password, String lastName, String email, int age) {
+    public User(String firstName, String password, String lastName, String email, int age) {
         this.firstName = firstName;
         this.password = password;
         this.lastName = lastName;
@@ -60,7 +60,6 @@ public class User implements UserDetails {
         this.lastName = lastName;
         this.email = email;
         this.age = age;
-
     }
 
 

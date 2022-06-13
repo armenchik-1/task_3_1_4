@@ -2,7 +2,12 @@ package springBoot.web.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 
 @Entity
 @Table(name = "roles")
@@ -14,7 +19,6 @@ public class Role implements GrantedAuthority {
     private String name;
 
     public Role() {
-
     }
 
     public Role(String name) {
@@ -40,8 +44,6 @@ public class Role implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return name;
-
-
     }
 
     @Override

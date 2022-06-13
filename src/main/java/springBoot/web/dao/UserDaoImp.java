@@ -25,9 +25,7 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public void removeUser(long id) {
-
         entityManager.remove(entityManager.find(User.class, id));
-
     }
 
    @Override
@@ -37,7 +35,7 @@ public class UserDaoImp implements UserDao {
 
     // нельзя добавить пользователей с одинаковым email
     @Override
-    public boolean isNotReg(String email) {
+    public boolean isExists(String email) {
         return getAllUsers()
                 .stream()
                 .anyMatch((e) -> e.getEmail().hashCode() == email.hashCode());
@@ -45,13 +43,13 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public User getUserById(long id) {
-        return (User)entityManager.createQuery("From User where id =:pId")
+        return entityManager.createQuery("From User where id =:pId", User.class)
                 .setParameter("pId", id).getSingleResult();
     }
 
     @Override
     public User getUserByName(String email) {
-        return (User) entityManager.createQuery("From User where email =:pEmail")
+        return entityManager.createQuery("From User where email =:pEmail", User.class)
                 .setParameter("pEmail", email).getSingleResult();
     }
 

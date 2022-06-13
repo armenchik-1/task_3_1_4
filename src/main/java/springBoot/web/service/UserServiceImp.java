@@ -1,6 +1,6 @@
 package springBoot.web.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -17,30 +17,34 @@ import java.util.Set;
 @Service
 public class UserServiceImp implements UserService, UserDetailsService {
 
-    @Autowired
-    private UserDao dao;
+    private final UserDao userDao;
+    private final SecurityService securityService;
+
+    public UserServiceImp(UserDao userDao, @Lazy SecurityService securityService) {
+        this.userDao = userDao;
+        this.securityService = securityService;
+    }
 
     @Transactional
     @Override
     public List<User> getAllUsers() {
-        return dao.getAllUsers();
+        return userDao.getAllUsers();
     }
 
     @Transactional
     @Override
     public boolean addUser(User user, String role) {
-        if (user.getUsername().trim().length() == 0 || user.getPassword().trim().length() == 0 || dao.isNotReg(user.getEmail()) ||
+        if (user.getUsername().trim().length() == 0 || securityService.getCrypt(user.getPassword()).trim().length() == 0 || userDao.isExists(user.getEmail()) ||
                 user.getEmail().trim().length() == 0 || user.getLastName().trim().length() == 0 || role.trim().length() == 0) {
             return false;
         } else {
             user.setRoles(getRoleForUser(role));
-            dao.addUser(user);
+            user.setPassword(securityService.getCrypt(user.getPassword()));
+            userDao.addUser(user);
             return true;
         }
     }
 
-    // Распределяем роли для пользователя, одна или две
-    @Transactional
     @Override
     public Set<Role> getRoleForUser(String role) {
         Set<Role> roles = new HashSet<>();
@@ -60,18 +64,19 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Transactional
     @Override
     public void removeUser(long id) {
-        dao.removeUser(id);
+        userDao.removeUser(id);
     }
 
     @Transactional
     @Override
     public boolean updateUser(User user, String role) {
-        if (user.getUsername().trim().length() == 0 || user.getPassword().trim().length() == 0 ||
+        if (user.getUsername().trim().length() == 0 || securityService.getCrypt(user.getPassword().trim()).length() == 0 ||
                 user.getEmail().trim().length() == 0 || user.getLastName().trim().length() == 0 || role.trim().length() == 0) {
             return false;
         } else {
             user.setRoles(getRoleForUser(role));
-            dao.updateUser(user);
+            user.setPassword(securityService.getCrypt(user.getPassword()));
+            userDao.updateUser(user);
             return true;
         }
     }
@@ -79,43 +84,33 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Transactional
     @Override
     public User getUserById(long id) {
-        return dao.getUserById(id);
+        return userDao.getUserById(id);
     }
 
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) {
-        Optional<User> userMayBy = Optional.ofNullable(dao.getUserByName(email));
-        return userMayBy.orElseThrow(IllegalAccessError::new);
+        Optional<User> userOptional = Optional.ofNullable(userDao.getUserByName(email));
+        return userOptional.orElseThrow(IllegalAccessError::new);
     }
 
-    // если поле пароля не заполнено, сохраняем пользователю старый пароль
-    @Transactional
-    @Override
-    public String ifPasswordNull(Long id, String password) {
-        if (password.trim().length() == 0) {
-            return dao.getUserById(id).getPassword();
-        } else {
-            return password;
-        }
-    }
-
-    // Создаем пользователя админ и юзер если еще не созданы
-    // Админ имеет две роли и доступ ко всему
-    // У юзера одна роль и ограниченость в доступе
     @Transactional
     @Override
     public void addAdminAndUserPanel() {
-        if (!dao.isNotReg("admin@mail.com")) {
+        if (!userDao.isExists("admin@mail.com")) {
 
             Set<Role> admin = new HashSet<>();
             admin.add(new Role("ADMIN"));
             admin.add(new Role("USER"));
-            dao.addUser(new User("Брюс", "admin", "Уэйн", "admin@mail.com", 30, admin));
+            userDao.addUser(new User("Уолтер",
+                    "$2a$12$rN65NXEwU5eZCvC5LkRiQOnGp1PH1EFAhOXdYym142ZaWocGu1TLa",
+                    "Уайт", "admin@mail.com", 30, admin));
 
             Set<Role> user = new HashSet<>();
             user.add(new Role("USER"));
-            dao.addUser(new User("Джокер", "user", "Напьер", "user@mail.com", 28, user));
+            userDao.addUser(new User("Кристиан",
+                    "$2a$12$6Rer8fNE1GyIMZgahQuReOnLkspgvC/Cbw52J.uOy3gdLdGQQRPr2",
+                    "Эриксен", "user@mail.com", 28, user));
         }
     }
 }
