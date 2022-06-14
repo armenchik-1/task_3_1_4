@@ -25,13 +25,11 @@ public class UserServiceImp implements UserService, UserDetailsService {
         this.securityService = securityService;
     }
 
-    @Transactional
     @Override
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }
 
-    @Transactional
     @Override
     public boolean addUser(User user, String role) {
         if (user.getUsername().trim().length() == 0 || securityService.getCrypt(user.getPassword()).trim().length() == 0 || userDao.isExists(user.getEmail()) ||
@@ -61,13 +59,11 @@ public class UserServiceImp implements UserService, UserDetailsService {
     }
 
 
-    @Transactional
     @Override
     public void removeUser(long id) {
         userDao.removeUser(id);
     }
 
-    @Transactional
     @Override
     public boolean updateUser(User user, String role) {
         if (user.getUsername().trim().length() == 0 || securityService.getCrypt(user.getPassword().trim()).length() == 0 ||
@@ -81,13 +77,11 @@ public class UserServiceImp implements UserService, UserDetailsService {
         }
     }
 
-    @Transactional
     @Override
     public User getUserById(long id) {
         return userDao.getUserById(id);
     }
 
-    @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) {
         Optional<User> userOptional = Optional.ofNullable(userDao.getUserByName(email));
